@@ -39,6 +39,7 @@ export default class EmployeeList extends React.Component {
     this.state = {
       employees: [],
       filteredEmployees: [],
+      filterText: "", // ✅ FIXED: initialize filterText
     };
   }
 
@@ -67,17 +68,20 @@ export default class EmployeeList extends React.Component {
   }
 
   addEmployee = (employee) => {
-    this.setState(
-      (prevState) => ({
-        employees: [
-          ...prevState.employees,
-          { id: prevState.employees.length + 1, ...employee },
-        ],
-      }),
-      () => {
-        this.filterEmployees(this.state.filterText);
-      }
-    );
+    this.setState((prevState) => {
+      const newEmployee = {
+        id: prevState.employees.length + 1,
+        ...employee,
+      };
+      const updatedEmployees = [...prevState.employees, newEmployee];
+      const updatedFiltered = updatedEmployees.filter((emp) =>
+        emp.name.toLowerCase().includes(prevState.filterText.toLowerCase())
+      );
+      return {
+        employees: updatedEmployees,
+        filteredEmployees: updatedFiltered,
+      };
+    });
   };
 
   filterEmployees = (filterText) => {
