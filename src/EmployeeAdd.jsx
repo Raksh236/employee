@@ -18,7 +18,19 @@ export default class EmployeeAdd extends React.Component {
   handleSubmit = (event) => {
     event.preventDefault();
     const { name, extension, email, title } = this.state;
-    const newEmployee = { name, extension, email, title };
+
+    if (!name || !extension || !email || !title) {
+      alert("All fields are required!");
+      return;
+    }
+
+    const newEmployee = {
+      name,
+      extension: Number(extension), // ✅ parse to number
+      email,
+      title,
+    };
+
     this.props.onAddEmployee(newEmployee);
     this.setState({ name: "", extension: "", email: "", title: "" }); // reset form
   };
