@@ -1,25 +1,24 @@
 import React from "react";
-import EmployeeFilter from "./EmployeeFilter.jsx";
-import EmployeeAdd from "./EmployeeAdd.jsx";
+import EmployeeFilter from "./EmployeeFilter";
+import EmployeeAdd from "./EmployeeAdd";
 
-function EmployeeRow(props) {
+function EmployeeRow({ employee }) {
   return (
     <tr>
-      <td>{props.employee.name}</td>
-      <td>{props.employee.extension}</td>
-      <td>{props.employee.email}</td>
-      <td>{props.employee.title}</td>
+      <td>{employee.name}</td>
+      <td>{employee.extension}</td>
+      <td>{employee.email}</td>
+      <td>{employee.title}</td>
     </tr>
   );
 }
 
-function EmployeeTable(props) {
-  const employeeRows = props.employees.map((emp) => (
+function EmployeeTable({ employees }) {
+  const rows = employees.map((emp) => (
     <EmployeeRow key={emp.id} employee={emp} />
   ));
-
   return (
-    <table className="bordered-table">
+    <table border="1">
       <thead>
         <tr>
           <th>Name</th>
@@ -28,7 +27,7 @@ function EmployeeTable(props) {
           <th>Title</th>
         </tr>
       </thead>
-      <tbody>{employeeRows}</tbody>
+      <tbody>{rows}</tbody>
     </table>
   );
 }
@@ -38,74 +37,50 @@ export default class EmployeeList extends React.Component {
     super();
     this.state = {
       employees: [],
-      filteredEmployees: [],
-      filterText: "", // ✅ FIXED: initialize filterText
+      filterText: "",
     };
+    this.nextId = 1;
   }
 
   componentDidMount() {
-    this.loadData();
-  }
-
-  loadData() {
-    const employees = [
+    // Initial dummy data
+    const initialEmployees = [
       {
-        id: 1,
-        name: "John Smith",
+        id: this.nextId++,
+        name: "Alice",
         extension: 123,
-        email: "john@example.com",
-        title: "Manager",
-      },
-      {
-        id: 2,
-        name: "Jane Doe",
-        extension: 456,
-        email: "jane@example.com",
+        email: "alice@example.com",
         title: "Engineer",
       },
     ];
-    this.setState({ employees, filteredEmployees: employees });
+    this.setState({ employees: initialEmployees });
   }
 
-  addEmployee = (employee) => {
-    this.setState((prevState) => {
-      const newEmployee = {
-        id: prevState.employees.length + 1,
-        ...employee,
-      };
-      const updatedEmployees = [...prevState.employees, newEmployee];
-      const updatedFiltered = updatedEmployees.filter((emp) =>
-        emp.name.toLowerCase().includes(prevState.filterText.toLowerCase())
-      );
-      return {
-        employees: updatedEmployees,
-        filteredEmployees: updatedFiltered,
-      };
-    });
+  handleAddEmployee = (employee) => {
+    const newEmployee = {
+      ...employee,
+      id: this.nextId++,
+    };
+    this.setState((prevState) => ({
+      employees: [...prevState.employees, newEmployee],
+    }));
   };
 
-  filterEmployees = (filterText) => {
-    const filteredEmployees = this.state.employees.filter((employee) =>
-      employee.name.toLowerCase().includes(filterText.toLowerCase())
-    );
-    this.setState({ filteredEmployees });
-  };
-
-  handleFilterChange = (filterText) => {
-    this.setState({ filterText }, () => {
-      this.filterEmployees(filterText);
-    });
+  handleFilterChange = (text) => {
+    this.setState({ filterText: text });
   };
 
   render() {
+    const { employees, filterText } = this.state;
+    const filteredEmployees = employees.filter((emp) =>
+      emp.name.toLowerCase().includes(filterText.toLowerCase())
+    );
+
     return (
       <div>
-        <h1>Employee Management Application</h1>
         <EmployeeFilter onFilterChange={this.handleFilterChange} />
-        <hr />
-        <EmployeeTable employees={this.state.filteredEmployees} />
-        <hr />
-        <EmployeeAdd onAddEmployee={this.addEmployee} />
+        <EmployeeTable employees={filteredEmployees} />
+        <EmployeeAdd onAddEmployee={this.handleAddEmployee} />
       </div>
     );
   }

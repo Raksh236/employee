@@ -1,31 +1,13 @@
 import React from "react";
 
-export default class EmployeeFilter extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      filterText: "",
-    };
-  }
-
-  handleFilterChange = (event) => {
-    const filterText = event.target.value;
-    this.setState({ filterText }, () => {
-      this.props.onFilterChange(filterText);
-    });
-  };
-
-  render() {
-    return (
-      <div>
-        <h3>Filter Employees</h3>
-        <input
-          type="text"
-          placeholder="Search by name"
-          value={this.state.filterText}
-          onChange={this.handleFilterChange}
-        />
-      </div>
-    );
-  }
+export default function EmployeeFilter({ onFilterChange }) {
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Filter by name"
+        onChange={(e) => onFilterChange(e.target.value)}
+      />
+    </div>
+  );
 }
